@@ -4,42 +4,33 @@ public class MinimumDistanceBwNumber
 {
     public static void main(String... args)
     {
-        int array[] = new int[]{3, 5, 4, 2, 6, 5, 6, 6, 5, 4, 8, 3};
-
-        System.out.println("Minimum Distance Between Array Index:: "+printMinDistance(array,3,6));
-
+        int array[] = new int[]{3, 5, 4, 3,7,6};
+        System.out.println("Minimum Distance Between Array Index:: "+printMinimumDistance(array,3,6));
     }
 
-    private static int printMinDistance(int[] array,int x, int y)
-    {
-        int minDistance = Integer.MAX_VALUE;
-        int prevIndex = -1;
+    private static int printMinimumDistance(int[] arr, int x, int y){
 
-      for(int i=0; i< array.length; i++)
-      {
-          if(array[i] == x || array[i] == y)
-          {
-              prevIndex = i;
-          }
-      }
-      if(prevIndex == -1) { return -1; }
+        int MIN_DISTANCE = Integer.MAX_VALUE;
+        int lastIndex = -1;
 
-        for(int j=0; j< array.length; j++)
-        {
-            if(array[j] == x || array[j] == y)
-            {
-               if(array[prevIndex] != array[j]  && (j-prevIndex) < minDistance)
-               {
-                   minDistance = j-prevIndex;
-                   prevIndex = j;
-               }
-               else
-               {
-                   prevIndex = j;
-               }
+        for(int i=0; i< arr.length; i++){
+            if(arr[i] == x || arr[i] == y){
+                lastIndex = i;
             }
         }
+        if(lastIndex == -1) { return -1; }
 
-        return minDistance;
+        for(int j=0; j<arr.length; j++){
+
+            if(arr[j] == x || arr[j] == y){
+
+                if(arr[lastIndex] != arr[j] && j - lastIndex < MIN_DISTANCE){
+
+                    MIN_DISTANCE = Math.abs(j-lastIndex);
+                }
+                lastIndex = j;
+            }
+        }
+        return MIN_DISTANCE;
     }
 }
