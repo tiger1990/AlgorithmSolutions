@@ -7,12 +7,11 @@ public class InsertDigitGetMax {
     public static void main(String... args){
 
         int givenNumber = 267;
-//        System.out.print("Exist:=  "+getNum(givenNumber));
-//
-//        System.out.print("\nExist:=  "+insertDigitGetMax(5,givenNumber));
-//
+        System.out.print("Exist:=  "+getNum(givenNumber));
 
-        int[] array = {2, 2, 3, 0, 4, -7};
+        System.out.print("\nExist:=  "+insertDigitGetMax(5,givenNumber));
+
+        int[] array = {5, -1, 3, 0, 4, -7};
         System.out.print("\nZeroPairsSubarray:=  "+solution(array));
     }
 
