@@ -23,12 +23,10 @@ public class FindTriplet {
         int[]triplet = new int[3];
 
         for(int j=size-1; j>=2; j--){
-
             int indexL = 0;
             int indexR = j -1;
 
             while(indexL < indexR) {
-
                int sum = arr[indexL] + arr[indexR];
                 if (sum == arr[j]) {
                     System.out.println(" " + arr[indexL] + " " + arr[indexR] + " " + arr[j]);
