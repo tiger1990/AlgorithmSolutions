@@ -1,5 +1,6 @@
 package array.algo_company.kotlin_practice
 
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.runBlocking
@@ -9,6 +10,15 @@ fun main() = runBlocking {
     checkFlowReduce()
     testFilterInFlow()
     testEmitAndCollect()
+    testZipOperator()
+}
+
+suspend fun testZipOperator() {
+    val flowOne = flowOf("Deepak", "Ravi", "Salman").flowOn(Dispatchers.Default)
+    val flowTwo = flowOf("Panwar", "Kumar", "Ali").flowOn(Dispatchers.Default)
+    flowOne.zip(flowTwo) { firstName, secondName ->
+        "$firstName $secondName \n"
+    }.flowOn(Dispatchers.Default).collect { print(it) }
 }
 
 suspend fun checkFlowReduce() {
@@ -46,7 +56,7 @@ suspend fun testEmitAndCollect() {
             delay(1000) // Simulate some asynchronous work
             emit(i) // Emit the value
         }
-    }.map { it * it } // 2. Intermediate operator: transform to square
+    }.map { it * it }.flowOn(Dispatchers.Default) // 2. Intermediate operator: transform to square
 
     // 3. Consumer: collect the values (triggers the flow execution)
     myFlow.collect { value ->
