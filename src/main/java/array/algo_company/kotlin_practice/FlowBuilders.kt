@@ -159,7 +159,7 @@ suspend fun testColdFlows() {
      */
     println("channelFlow{} builder function")
 
-    val channelFlow = channelFlow {
+    channelFlow {
         (0..3).forEach {
             send(it)
         }
@@ -172,5 +172,4 @@ suspend fun testColdFlows() {
         }
     }.flowOn(Dispatchers.Default)
         .collect { println(it) }
-    channelFlow
 }
