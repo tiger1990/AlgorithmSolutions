@@ -69,19 +69,18 @@ suspend fun testHotFlows() = coroutineScope {
      */
     val sharedFlow = MutableSharedFlow<Int>()
 
+    //Get the values that were emitted in the past (configured with a replay buffer).
+//    val sharedFlow2 = MutableSharedFlow<Int>(
+//        replay = 1,
+//        extraBufferCapacity = 0
+//    )
+
     // Collector 1
     launch {
         sharedFlow.collect {
             println("Collector 1: $it")
         }
     }
-    // Collector 2
-    launch {
-        sharedFlow.collect {
-            println("Collector 2: $it")
-        }
-    }
-    delay(500)
 
     // Emit values
     launch {
@@ -91,8 +90,17 @@ suspend fun testHotFlows() = coroutineScope {
         }
     }
 
-    delay(2000)
+    // collector 2 will start collecting after 500ms delay so latest
+    // emitted values will be collected because its hot flow ,
+    // will print Collector 2: 2, Collector 2: 3
+    delay(500)
+    launch {
+        sharedFlow.collect {
+            println("Collector 2: $it")
+        }
+    }
 
+    delay(2000)
 
     println("\nStateFlow Example")
     /**
@@ -151,11 +159,18 @@ suspend fun testColdFlows() {
      */
     println("channelFlow{} builder function")
 
-    channelFlow {
+    val channelFlow = channelFlow {
         (0..3).forEach {
             send(it)
         }
-        awaitClose { /* Optional cleanup logic */ }
+        close()
+        awaitClose { /* Optional cleanup logic
+        awaitClose {} keeps the flow alive forever
+         awaitClose() suspends indefinitely until the channel is closed or cancelled.
+        */
+            println("channel closed")
+        }
     }.flowOn(Dispatchers.Default)
         .collect { println(it) }
+    channelFlow
 }

@@ -8,6 +8,7 @@ import java.io.IOException
 
 fun main() = runBlocking {
     startTask()
+    startTaskAndRetryWhen()
 }
 
 suspend fun startTask() {
@@ -22,6 +23,23 @@ suspend fun startTask() {
                 return@retry true
             } else {
                 return@retry false
+            }
+        }.catch {
+            println("Something Went Wrong")
+        }.collect {
+            println("Task Completed")
+        }
+}
+
+suspend fun startTaskAndRetryWhen() {
+    doLongRunningTask()
+        .flowOn(Dispatchers.Default)
+        .retryWhen { cause, attempt ->
+            if (cause is IOException && attempt < 3) {
+                delay(2000)
+                return@retryWhen true
+            } else {
+                return@retryWhen false
             }
         }.catch {
             println("Something Went Wrong")
