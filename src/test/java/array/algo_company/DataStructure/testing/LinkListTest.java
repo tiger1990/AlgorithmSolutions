@@ -7,7 +7,6 @@ import org.junit.Test;
 
 public class LinkListTest
 {
-
     private BaseLinkedList linkedList;
 
     @Before

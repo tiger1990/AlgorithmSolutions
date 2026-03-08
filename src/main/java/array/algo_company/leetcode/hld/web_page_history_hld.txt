@@ -1,0 +1,272 @@
+High Level Design (HLD): Web Page History / Versioning System
+--------------------------------------------------------------
+
+1. Problem Statement
+Design a system to maintain and display the history of a web page.
+The system should:
+- Store historical versions of a page
+- Display timestamps of edits
+- Allow users to view previous versions
+- Allow reverting to previous versions
+- Scale to millions of pages
+
+Examples:
+- Wikipedia page history
+- Google Docs version history
+- Git commit history
+
+
+2. High Level Architecture
+                     +----------------------+
+                     |        Client        |
+                     |   Browser / Mobile   |
+                     +----------+-----------+
+                                |
+                                v
+                     +----------------------+
+                     |      API Gateway     |
+                     | Authentication,     |
+                     | Rate Limiting       |
+                     +----------+-----------+
+                                |
+            ---------------------------------------------
+            |                                           |
+            v                                           v
+   +-------------------+                       +----------------------+
+   |     Page Service   |                       |    History Service   |
+   |  (CRUD Operations) |                       | Retrieve Versions   |
+   +---------+----------+                       +----------+----------+
+             |                                             |
+             v                                             v
+      +--------------+                            +------------------+
+      | Diff Service |                            | Version Service  |
+      | Compute page |                            | Manage Versions  |
+      | differences  |                            +--------+---------+
+      +------+-------+                                     |
+             |                                             |
+             -------------------+---------------------------
+                                 |
+                                 v
+                       +-----------------------+
+                       |    Distributed DB     |
+                       |  (Page + Versions)    |
+                       +-----------+-----------+
+                                   |
+                                   v
+                         +-------------------+
+                         |   Cache (Redis)   |
+                         | Latest Page Data  |
+                         +-------------------+
+
+
+3. Components
+
+Client UI
+- Displays page content
+- Shows version history
+- Allows revert to old versions
+
+=====================================
+Page: System Design Guide
+
+History
+--------------------------------
+Version 12  | 2026-03-08 | User A
+Version 11  | 2026-03-07 | User B
+Version 10  | 2026-03-05 | User C
+
+[View] [Compare] [Revert]
+======================================
+
+API Gateway
+- Handles incoming requests
+- Routes to internal services
+
+Page Service
+- Handles page creation and updates
+- Maintains current page version
+
+History Service
+- Retrieves historical versions
+- Returns list of versions with timestamps
+
+Diff Service
+- Computes difference between two versions
+- Stores only changes to reduce storage
+
+
+4. APIs
+GET  /pages/{pageId}
+GET  /pages/{pageId}/history
+GET  /pages/{pageId}/version/{versionId}
+
+POST /pages/{pageId}/update
+POST /pages/{pageId}/revert/{versionId}
+
+GET  /pages/{pageId}/diff?v1=10&v2=12
+
+
+5. Database Design
+
+Table: Pages
+-------------
+page_id (UUID)
+title
+current_version
+created_at
+
+
+Table: PageVersions
+--------------------
+version_id (UUID)
+page_id (UUID)
+version_number
+content
+author
+created_at
+
+
+6. Delta Storage Optimization
+
+Instead of storing full page every time:
+Store only differences.
+
+Example:[This reduces storage significantly.]
+
+Version 1
+Full Content
+
+Version 2
++ Added paragraph
+
+Version 3
+- Removed sentence
+
+
+7. Event Sourcing (Advanced)
+
+Store change events instead of snapshots.
+
+Example:
+
+Event 1: Page created
+Event 2: Title updated
+Event 3: Paragraph added
+Event 4: Paragraph removed
+
+To rebuild page:
+Replay all events.
+
+Advantages:
+full audit trail
+easy rollback
+scalable event streaming
+
+8. Caching
+Use Redis for:
+- Latest page content
+- Frequently viewed pages
+- Recent history lists
+
+Example cache keys:
+page:123 -> latest content
+history:123 -> version list
+
+Search & Indexing
+If millions of pages exist:
+Use: Elasticsearch
+For:
+full-text search
+fast page lookup
+history filtering
+
+9. Update Flow
+
+User edits page
+      |
+      v
+API Gateway
+      |
+      v
+Page Service
+      |
+      v
+Diff Service calculates changes
+      |
+      v
+Store new version in database
+      |
+      v
+Update current version
+
+
+10. Revert Flow : Never delete history.
+
+User selects previous version
+      |
+      v
+Fetch old version
+      |
+      v
+Create new version using old content
+      |
+      v
+Update page
+
+
+11. Scaling
+
+Horizontal Scaling: Services can scale independently
+- Page Service instances
+- History Service instances
+- Diff Service instances
+
+Database Sharding : Shard by page_id:
+Example:
+Shard 1 -> page_id 1-1M
+Shard 2 -> page_id 1M-2M
+
+Use CDN for static page rendering.
+Example providers:
+Cloudflare
+Akamai Technologies
+
+12. Fault Tolerance
+
+- Database replication
+- Backup snapshots
+- Event log recovery
+
+
+13. Security
+
+Role based access control (RBAC)
+Roles:
+- Admin
+- Editor
+- Viewer
+Only authorized users can edit or revert.
+Edit permissions
+Audit logging
+
+
+14. Monitoring
+Track:
+- Page update rate
+- Version storage growth
+- API latency
+- Cache hit rate
+
+Monitoring tools:
+Prometheus
+Grafana
+
+
+15. Summary
+
+Each page update creates a new version stored in a version table.
+History APIs retrieve version lists with timestamps.
+Reverting creates a new version using old content.
+System scales using caching, diff storage, and database sharding.
+
+End of Document
