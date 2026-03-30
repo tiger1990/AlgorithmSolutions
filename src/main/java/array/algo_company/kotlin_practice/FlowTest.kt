@@ -1,13 +1,16 @@
 package array.algo_company.kotlin_practice
 
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
 fun main() = runBlocking {
 
     checkFlowReduce()
+    checkFlowForNonBlocking()
     testFilterInFlow()
     testEmitAndCollect()
     testZipOperator()
@@ -26,6 +29,33 @@ suspend fun checkFlowReduce() {
         i + j
     }
     println(result)
+}
+
+suspend fun checkFlowForNonBlocking() {
+
+    val flow = flow {
+        for (i in 1..9) {
+            delay(100)
+            emit(i)
+        }
+    }
+
+    coroutineScope {
+        // Task 1: The Loop
+        launch {
+            for (i in 1..9) {
+                println("I am not blocked $i")
+                delay(100)
+            }
+        }
+
+        // Task 2: The Flow Collection (Now in its own coroutine)
+        launch {
+            flow.collect { println(it) }
+        }
+    }
+    // Execution only reaches here after BOTH coroutines above finish
+    println("All tasks complete.")
 }
 
 suspend fun testFilterInFlow() {

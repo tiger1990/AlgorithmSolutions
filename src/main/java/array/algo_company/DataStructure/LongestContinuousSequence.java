@@ -1,5 +1,6 @@
 package array.algo_company.DataStructure;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -12,29 +13,30 @@ public class LongestContinuousSequence {
     }
 
     private static int longestConsecutive(int[] numbers) {
+
         if (numbers == null || numbers.length == 0) {
             return 0;
         }
-        Set<Integer> numbersSet = new HashSet<>();
+        HashSet<Integer> numberSet = new HashSet<>();
         for (int num : numbers) {
-            numbersSet.add(num);
+            numberSet.add(num);
         }
 
         int longest = 0;
-        for (int num : numbersSet) {
+        for (int num : numberSet) {
 
             // start counting if num-1 is not in set
-            if (!numbersSet.contains(num - 1)) {
+            if (!numberSet.contains(num - 1)) {
 
-                int current = num;
+                int currentNum = num;
                 int length = 1;
 
-                while (numbersSet.contains(current + 1)) {
+                while (numberSet.contains(currentNum + 1)) {
+                    currentNum++;
                     length++;
-                    current++;
                 }
 
-                longest = Math.max(length, longest);
+                longest = Math.max(longest, length);
             }
         }
         return longest;

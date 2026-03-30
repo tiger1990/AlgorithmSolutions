@@ -77,9 +77,7 @@ class LongestSubstringUniqueChar {
         if (str == null || str.length() <= 1) {
             return str;
         }
-        int maxLength = 0;
-        int left = 0;
-        int right = 0;
+        int maxLength = 0; int left = 0; int right = 0;
 
         // Starting index of longest substring
         int startIndex = 0;
