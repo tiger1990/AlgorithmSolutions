@@ -69,7 +69,7 @@ public class LongestSubArrayWithSumK {
             }
             // Case 2: (sum - k) seen before
             if (map.containsKey(sum - k)) {
-                maxLength = Math.max(maxLength, i - -map.get(sum - k));
+                maxLength = Math.max(maxLength, i - map.get(sum - k));
             } else {
                 map.put(sum, i);
             }
