@@ -21,15 +21,14 @@ public class MaximumNumberOfEnvelopFolded {
         System.out.println("Russian Dolls Envelopes " + findRussianDoll(envelopes));
     }
 
-
     public static int findRussianDoll(int[][] babyDolls) {
 
         // Step 1 sort with width,
         // if width same then height in DESC order to break increasing order pattern to remove invalid ones
         Arrays.sort(babyDolls, (a, b) -> {
 
-            if (a[1] == b[1]) {
-                return b[1] - a[1];
+            if (a[0] == b[0]) {
+                return b[1] - a[1]; // height descending if width same
             }
             return a[0] - b[0];
         });
@@ -43,13 +42,13 @@ public class MaximumNumberOfEnvelopFolded {
             // if height not available in lis - will return -(size + 1);  // key not found
             int index = Collections.binarySearch(lis, height);
 
-            if(index < 0){
+            if (index < 0) {
                 index = -(index + 1);
             }
 
-            if(index == lis.size()){
+            if (index == lis.size()) {
                 lis.add(height);
-            }else{
+            } else {
                 lis.set(index, height);
             }
         }
