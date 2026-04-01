@@ -18,7 +18,7 @@ public class MaximumNumberOfEnvelopFolded {
         int envelopedNested = maxEnvelopes(envelopes);
         System.out.println("Folded Envelopes " + envelopedNested);
 
-        System.out.println("Russian Dolls Envelopes " + envelopedNested);
+        System.out.println("Russian Dolls Envelopes " + findRussianDoll(envelopes));
     }
 
 
