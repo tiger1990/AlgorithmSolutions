@@ -27,6 +27,7 @@ public class MinimumWindowSubString {
         String minWindowSubString1 = getMinWindowSubString("AOBODEBANC", "ANB");
         System.out.println("\nLongest Unique Substring: " + minWindowSubString1);
         System.out.println("Unique SubString Length is :" + minWindowSubString1.length());
+
     }
 
     static String getMinWindowSubString(String str, String target) {
